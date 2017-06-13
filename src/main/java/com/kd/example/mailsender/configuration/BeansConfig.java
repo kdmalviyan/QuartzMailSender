@@ -1,0 +1,55 @@
+package com.kd.example.mailsender.configuration;
+
+import java.io.IOException;
+import java.util.Properties;
+
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.VelocityException;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.ui.velocity.VelocityEngineFactory;
+
+@Configuration
+@SuppressWarnings("deprecation")
+public class BeansConfig {
+
+    /** Velocity configuration.
+     * 
+     * @return
+     * @throws VelocityException
+     * @throws IOException */
+    @Bean
+    public VelocityEngine getVelocityEngine() throws VelocityException, IOException {
+        VelocityEngineFactory factory = new VelocityEngineFactory();
+        Properties props = new Properties();
+        props.put("resource.loader", "class");
+        props.put("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+
+        factory.setVelocityProperties(props);
+        return factory.createVelocityEngine();
+    }
+
+    /** JavaMail configuration.
+     * 
+     * @return */
+    @Bean
+    public JavaMailSender getMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setDefaultEncoding("UTF-8"); 
+        mailSender.setHost("mail-server");
+        mailSender.setPort(25);
+        mailSender.setUsername("mail-server-username");
+        mailSender.setPassword("mail-server-password");
+
+        Properties javaMailProperties = new Properties();
+        javaMailProperties.put("mail.smtp.auth", "true");
+        javaMailProperties.put("mail.transport.protocol", "smtp");
+        javaMailProperties.put("mail.debug", "true");
+
+        mailSender.setJavaMailProperties(javaMailProperties);
+        return mailSender;
+    }
+
+}
